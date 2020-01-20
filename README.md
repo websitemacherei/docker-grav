@@ -18,21 +18,41 @@ version: '3'
 
 services:
   grav:
-    build: .
+
+    # pulls dockerhub image, specify image version with websitemacherei/grav:x.y.z
+    image: websitemacherei/grav:latest
+    
+    environment:
+      # set the grav version to download
+      # will download admin plugin as well
+      - GRAV_VERSION=1.6.19
+    
+    # use alternate Dockerfile in project root
+    #
+    # Example Dockefile:
+    #   FROM websitemacherei/grav:latest
+    #   RUN apk --no-cache add htop
+    #   USER app
+    #
+    # build: 
+    #   context: .
+
+    # logging rotation after 200 KB
     logging:
-      # set logging options
       options:
         max-size: "200k"
-    environment:
-      # default is latest
-      - GRAV_VERSION=x.y.z 
+  
     volumes:
-      # mount your grav user dir
-      - ./your_user_dir:/var/www/html/user 
-      # mount ssh for cloning private git repositories
-      - ~/.ssh:/home/app/.ssh 
+      # mount selectivly files in the web folder, like .htaccess or setup.php
+      - ./web/.htaccess:/var/www/html/.htaccess
+      # mount user folder into image
+      - ./web/user:/var/www/html/user
+      # mount your ssh key to download deps from user/.dpendencies file
+      # - ~/.ssh:/home/app/.ssh
+    
     ports:
-      - 8080:8080
+      # forward port for local development
+      - "8080:8080"
 ```
 
 ## Design decisions
