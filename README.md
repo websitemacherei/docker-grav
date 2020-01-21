@@ -1,6 +1,11 @@
 # grav cms docker
 
-a complete docker image for grav cms with `php-fpm` and `nginx` handled over `supervisord`. 
+a complete docker image for grav cms with `php-fpm` and `nginx` handled over `supervisord`. Get it on [Docker Hub](https://hub.docker.com/r/websitemacherei/grav).
+
+```
+docker pull websitemacherei/grav
+```
+
 
 ## Features
 
@@ -30,7 +35,7 @@ services:
     # use alternate Dockerfile in project root
     #
     # Example Dockefile:
-    #   FROM websitemacherei/grav:latest
+    #   FROM websitemacherei/grav:base-latest
     #   RUN apk --no-cache add htop
     #   USER app
     #
