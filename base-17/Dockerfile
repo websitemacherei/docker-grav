@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.13
 
 # bash promt modification
 ENV PS1="\u@\w\$ "
@@ -39,7 +39,7 @@ RUN apk --no-cache add \
   zip
 
 # locales
-ENV MUSL_LOCALE_DEPS cmake make musl-dev gcc gettext-dev libintl 
+ENV MUSL_LOCALE_DEPS cmake make musl-dev gcc gettext-dev libintl
 ENV MUSL_LOCPATH /usr/share/i18n/locales/musl
 
 RUN apk add --no-cache --virtual .locale-deps \
@@ -52,6 +52,9 @@ RUN apk add --no-cache --virtual .locale-deps \
     && cp /usr/share/i18n/locales/musl/de_DE.UTF-8 /usr/share/i18n/locales/musl/de_DE \
     && apk del .locale-deps
 
+# set timezone Europe/Berlin
+RUN apk add tzdata && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime && apk del tzdata
+
 # configuration files
 ADD config/nginx /etc/nginx
 ADD config/php/php-fpm.conf /etc/php7/php-fpm.d/www.conf
@@ -59,13 +62,12 @@ ADD config/php/php.ini /etc/php7/conf.d/90_custom.ini
 ADD config/supervisord.conf /etc/supervisord.conf
 
 # make sure files/folders needed by the processes are accessable when they run under the app user
-RUN chown -R app.app /run && \
-  chown -R app.app /var/lib/nginx && \
-  chown -R app.app /var/tmp/nginx && \
-  chown -R app.app /var/log/nginx
+RUN chown -R app.app /run  && \
+    chown -R app.app /var/lib/nginx && \
+    chown -R app.app /var/log/nginx
 
 # setup document root
-RUN mkdir -p /var/www/html
+RUN mkdir -p /var/www/html/user/pages
 RUN chown -R app.app /var/www/html
 
 # add install files for grav
@@ -83,3 +85,5 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 
 # configure a healthcheck to validate that everything is up&running
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
+
+USER app
