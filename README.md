@@ -30,7 +30,7 @@ services:
     environment:
       # set the grav version to download
       # will download admin plugin as well
-      - GRAV_VERSION=1.6.19
+      - GRAV_VERSION=1.7.7
     
     # use alternate Dockerfile in project root
     #
