@@ -4,7 +4,7 @@ USER root
 
 # Configuration
 ENV TZ=Europe/Berlin
-ENV GRAV_VERSION=1.7.45
+ENV GRAV_VERSION=1.7.46
 
 # PHP Setup
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
