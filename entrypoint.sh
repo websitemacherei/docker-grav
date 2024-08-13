@@ -15,6 +15,11 @@ if [ -f "/var/www/html/user/config/plugins/git-sync.yaml" ]; then
     git config --global pull.ff true
     bin/plugin git-sync sync
 fi
+# Check if the environment variable ALLOW_ROBOTS is set to false
+if [ "$ALLOW_ROBOTS" = "false" ]; then
+    echo "User-agent: *" > /var/www/html/robots.txt
+    echo "Disallow: /" >> /var/www/html/robots.txt
+fi
 sudo service cron start
 /usr/local/bin/docker-php-entrypoint
 /usr/local/bin/apache2-foreground
