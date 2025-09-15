@@ -34,6 +34,7 @@ RUN mkdir -p /usr/src/php/ext/imagick; \
     docker-php-ext-install imagick;
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install opcache
+RUN docker-php-ext-install intl
 RUN a2enmod expires
 RUN a2enmod headers
 RUN a2enmod rewrite
