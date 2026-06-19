@@ -1,10 +1,10 @@
-FROM php:8.3.6-apache
+FROM php:8.3.31-apache
 
 USER root 
 
 # Configuration
 ENV TZ=Europe/Berlin
-ENV GRAV_VERSION=1.7.49.5
+ENV GRAV_VERSION=1.7.53
 
 # PHP Setup
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
@@ -21,17 +21,17 @@ RUN printf '[PHP]\ndate.timezone = "Europe/Berlin"\n' > /usr/local/etc/php/conf.
 RUN apt-get update -y && apt-get install -y libyaml-dev libpng-dev libjpeg-dev zlib1g-dev libzip-dev git dos2unix locales locales-all cron sudo libmagickwand-dev
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
-RUN mkdir -p /usr/src/php/ext/imagick; \
-    curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
-    cd /usr/src/php/ext/imagick; \
-    chmod +x configure-cflags.sh; \
-    ./configure-cflags.sh --prefix=/usr/local/ImageMagick-7.1.0-60 \
-        --with-heic=yes \
-        --with-jpeg=yes \
-        --with-png=yes \
-        --with-tiff=yes \
-        --with-webp=yes; \
-    docker-php-ext-install imagick;
+#RUN mkdir -p /usr/src/php/ext/imagick; \
+#    curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
+#    cd /usr/src/php/ext/imagick; \
+#    chmod +x configure-cflags.sh; \
+#    ./configure-cflags.sh --prefix=/usr/local/ImageMagick-7.1.0-60 \
+#        --with-heic=yes \
+#        --with-jpeg=yes \
+#        --with-png=yes \
+#        --with-tiff=yes \
+#        --with-webp=yes; \
+#    docker-php-ext-install imagick;
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install opcache
 RUN docker-php-ext-install intl
@@ -40,6 +40,28 @@ RUN a2enmod headers
 RUN a2enmod rewrite
 RUN pecl install yaml && echo "extension=yaml.so" > /usr/local/etc/php/conf.d/ext-yaml.ini && docker-php-ext-enable yaml
 
+#imagick from git 
+RUN apt-get update && apt-get install -y \
+    libmagickwand-dev \
+    libheif-dev \
+    libde265-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libtiff-dev \
+    libwebp-dev \
+    git \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/Imagick/imagick.git /tmp/imagick \
+    && cd /tmp/imagick \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && docker-php-ext-enable imagick \
+    && rm -rf /tmp/imagick
+	
 # User
 RUN usermod -u 1000 www-data
 RUN echo 'www-data ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
