@@ -13,6 +13,7 @@ RUN printf '[PHP]\nmemory_limit = 512M\n' >> /usr/local/etc/php/conf.d/dockerfil
 RUN printf 'post_max_size = 64M\n' >> /usr/local/etc/php/conf.d/dockerfile-php.ini
 RUN printf 'upload_max_filesize = 64M\n' >> /usr/local/etc/php/conf.d/dockerfile-php.ini
 RUN printf 'max_execution_time = 300\n' >> /usr/local/etc/php/conf.d/dockerfile-php.ini
+RUN printf 'max_input_vars = 15000\n' >> /usr/local/etc/php/conf.d/dockerfile-php.ini
 
 # Timzone Setup
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
